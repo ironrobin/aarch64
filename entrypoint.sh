@@ -9,11 +9,16 @@ repo_name=$(echo $repo_full | cut -d/ -f2)
 sed -i '/\[community\]/d' /etc/pacman.conf
 sed -i 's/#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
 pacman-key --init
+pacman -Sy --noconfirm archlinux-keyring
 pacman -Syu --noconfirm --needed sudo git wget python
 useradd builduser -m
 chown -R builduser:builduser /build
 git config --global --add safe.directory /build
 sudo -u builduser gpg --recv-keys 38DBBDC86092693E
+
+# for archinstall 
+sudo -u builduser gpg --recv-keys D4B58E897A929F2E
+
 passwd -d builduser
 printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers
 
@@ -25,15 +30,16 @@ gpg --homedir /home/builduser/.gnupg --list-keys
 echo "checking out root key"
 gpg --homedir /root/.gnupg --list-keys
 
-sudo pacman -S aarch64-linux-gnu-binutils aarch64-linux-gnu-gcc base-devel --noconfirm --needed
+sudo pacman -S aarch64-linux-gnu-binutils aarch64-linux-gnu-gcc base-devel  --noconfirm --needed
 
-for i in "linux-t14s-oled" ; do
+for i in "archinstall-aarch64" ; do
 	status=13
 	git submodule update --init $i
 	cd $i
 
 	for i in $(sudo -u builduser makepkg --packagelist); do
 		package=$(basename $i)
+		package="${package/-x86_64.pkg.tar.zst/-aarch64.pkg.tar.zst}"
 		wget https://github.com/$repo_owner/$repo_name/releases/download/packages/$package \
 			&& echo "Warning: $package already built, did you forget to bump the pkgver and/or pkgrel? It will not be rebuilt."
 	done
@@ -48,7 +54,7 @@ done
 
 cp */*.pkg.tar.* ./
 gpg --list-keys
-repo-add --sign ./$repo_owner-t14s.db.tar.gz ./*.pkg.tar.zst
+repo-add --sign ./$repo_owner-aarch64.db.tar.gz ./*.pkg.tar.zst
 
 for i in *.db *.files; do
 cp --remove-destination $(readlink $i) $i
