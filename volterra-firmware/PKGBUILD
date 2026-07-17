@@ -1,7 +1,7 @@
 pkgname=volterra-firmware
 pkgdesc="Microsoft Dev Kit 2023 (Project Volterra) firmware"
 pkgver=20260622
-pkgrel=8
+pkgrel=9
 arch=('any')
 url="https://git.kernel.org/?p=linux/kernel/git/firmware/linux-firmware.git;a=summary"
 license=('GPL2' 'GPL3' 'custom')
@@ -58,5 +58,6 @@ package() {
   install -Dm644 board-2.bin.zst "${_ath11k_dir}/hw2.0/board-2.bin.zst"
 
   # Volterra's WiFi card identifies itself as hw2.1 but uses the hw2.0 data.
+  install -dm755 "${_ath11k_dir}/hw2.1"
   ln -s ../hw2.0/board-2.bin.zst "${_ath11k_dir}/hw2.1/board-2.bin.zst"
 }
