@@ -1,7 +1,7 @@
 pkgname=volterra-firmware
 pkgdesc="Microsoft Dev Kit 2023 (Project Volterra) firmware"
 pkgver=20260622
-pkgrel=6
+pkgrel=7
 arch=('any')
 url="https://git.kernel.org/?p=linux/kernel/git/firmware/linux-firmware.git;a=summary"
 license=('GPL2' 'GPL3' 'custom')
@@ -54,9 +54,9 @@ package() {
 
   # Override the distro-provided ath11k board file without conflicting with
   # linux-firmware-atheros, which owns the regular ath11k firmware tree.
-  local _ath11k_dir="${pkgdir}/usr/lib/firmware/updates/ath11k/WCN6855"
-  install -Dm644 board-2.bin "${_ath11k_dir}/hw2.0/board-2.bin"
+  # local _ath11k_dir="${pkgdir}/usr/lib/firmware/updates/ath11k/WCN6855"
+  # install -Dm644 board-2.bin "${_ath11k_dir}/hw2.0/board-2.bin"
 
   # Volterra's WiFi card identifies itself as hw2.1 but uses the hw2.0 data.
-  ln -s hw2.0 "${_ath11k_dir}/hw2.1"
+  # ln -s hw2.0 "${_ath11k_dir}/hw2.1"
 }
