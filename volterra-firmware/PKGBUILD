@@ -1,15 +1,18 @@
-pkgname="volterra-firmware"
+pkgname=volterra-firmware
 pkgdesc="Microsoft Dev Kit 2023 (Project Volterra) firmware"
 pkgver=20260622
-pkgrel=5
-arch=("any")
-options=('!strip')
+pkgrel=6
+arch=('any')
 url="https://git.kernel.org/?p=linux/kernel/git/firmware/linux-firmware.git;a=summary"
 license=('GPL2' 'GPL3' 'custom')
 makedepends=('git')
-depends=('linux-firmware-qcom')
+depends=(
+  'linux-firmware-atheros'
+  'linux-firmware-mediatek'
+  'linux-firmware-qcom'
+  'linux-firmware-realtek'
+)
 options=(!strip)
-pkgname=(volterra-firmware)
 _srcdir=linux-firmware
 
 source=("git+https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git"
@@ -35,40 +38,19 @@ sha256sums=('SKIP'
             '736544b268c43181df3529ad0d8978a2c25bc5744d1bbcfae8bc4b0feb13687a')
 
 prepare() {
-  cd linux-firmware
-  git checkout tags/${pkgver}
-  local _c
-  for _c in "${_backports[@]}"; do
-    git log --oneline -1 "${_c}"
-    git cherry-pick -n "${_c}"
-  done
+  cd "${_srcdir}"
+  git checkout "tags/${pkgver}"
 }
 
-package_volterra-firmware() {
-  pkgdesc+=" - Firmware for Microsoft Dev Kit 2023 (Project Volterra)"
+package() {
+  install -Dm644 "${_srcdir}/WHENCE" \
+    "${pkgdir}/usr/share/licenses/${pkgname}/WHENCE"
 
-  install -Dt "${pkgdir}/usr/share/licenses/${pkgname}" -m644 ${_srcdir}/WHENCE
-
-  mkdir -pv "${pkgdir}"/usr/lib/firmware
-  cp -rv "${_srcdir}"/qca "${pkgdir}"/usr/lib/firmware
-  cp -rv "${_srcdir}"/rtl_nic "${pkgdir}"/usr/lib/firmware
-
-  # needed for wifi dongle
-  cp -rv "${_srcdir}"/mediatek "${pkgdir}"/usr/lib/firmware
-
-
-  DEST_DIR="${pkgdir}"/usr/lib/firmware/updates/qcom/sc8280xp/microsoft/blackrock/
-
-  mkdir -p "${DEST_DIR}"
-  
-  cp qcadsp8280.mbn "${DEST_DIR}"
-  cp qccdsp8280.mbn "${DEST_DIR}"
-  cp qcdxkmsuc8280.mbn "${DEST_DIR}"
-  cp qcvss8280.mbn "${DEST_DIR}"
-  cp adspr.jsn "${DEST_DIR}"
-  cp adspua.jsn "${DEST_DIR}"
-  cp battmgr.jsn "${DEST_DIR}"
-  cp cdspr.jsn "${DEST_DIR}"
+  local _qcom_dir="${pkgdir}/usr/lib/firmware/updates/qcom/sc8280xp/microsoft/blackrock"
+  install -dm755 "${_qcom_dir}"
+  install -m644 qcadsp8280.mbn qccdsp8280.mbn qcdxkmsuc8280.mbn \
+    qcvss8280.mbn adspr.jsn adspua.jsn battmgr.jsn cdspr.jsn \
+    "${_qcom_dir}"
 
   # Override the distro-provided ath11k board file without conflicting with
   # linux-firmware-atheros, which owns the regular ath11k firmware tree.
