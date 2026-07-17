@@ -1,7 +1,7 @@
 pkgname="volterra-firmware"
 pkgdesc="Microsoft Dev Kit 2023 (Project Volterra) firmware"
 pkgver=20260622
-pkgrel=2
+pkgrel=3
 arch=("any")
 options=('!strip')
 url="https://git.kernel.org/?p=linux/kernel/git/firmware/linux-firmware.git;a=summary"
@@ -50,7 +50,6 @@ package_volterra-firmware() {
 
   mkdir -pv "${pkgdir}"/usr/lib/firmware
   cp -rv "${_srcdir}"/qca "${pkgdir}"/usr/lib/firmware
-  cp -rv "${_srcdir}"/qcom "${pkgdir}"/usr/lib/firmware
   cp -rv "${_srcdir}"/ath11k "${pkgdir}"/usr/lib/firmware
   cp -rv "${_srcdir}"/rtl_nic "${pkgdir}"/usr/lib/firmware
 
