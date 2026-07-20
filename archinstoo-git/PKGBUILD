@@ -1,0 +1,59 @@
+# Maintainer: Ironrobin <ironrobin@protonmail.com>
+# Contributor: Hadean Eon <hadean-eon-dev@proton.me>
+
+pkgname=archinstoo-git
+_pkgname=archinstoo
+pkgver=r6380.5695be79
+pkgrel=1
+pkgdesc="An Arch Linux installer with more control and choices (git version)"
+arch=(any)
+url="https://github.com/h8d13/archinstoo"
+license=(GPL-3.0-only)
+depends=(
+  arch-install-scripts
+  btrfs-progs
+  coreutils
+  cryptsetup
+  dosfstools
+  e2fsprogs
+  f2fs-tools
+  git
+  kbd
+  libxcrypt
+  lvm2
+  ntfs-3g
+  pacman
+  pciutils
+  python
+  python-pyparted
+  systemd
+  util-linux
+  xfsprogs
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+provides=(archinstoo)
+conflicts=(archinstoo)
+source=("$_pkgname::git+$url.git#branch=master")
+sha512sums=('SKIP')
+
+pkgver() {
+  cd "$_pkgname"
+  printf 'r%s.%s' "$(git rev-list --count HEAD)" "$(git rev-parse --short=8 HEAD)"
+}
+
+build() {
+  cd "$_pkgname/archinstoo"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$_pkgname/archinstoo"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 docs/archinstoo.1 -t "$pkgdir/usr/share/man/man1/"
+}

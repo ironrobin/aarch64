@@ -32,7 +32,7 @@ gpg --homedir /root/.gnupg --list-keys
 
 sudo pacman -S aarch64-linux-gnu-binutils aarch64-linux-gnu-gcc base-devel  --noconfirm --needed
 
-for i in "archinstall-aarch64" "linux-x13s" "volterra-firmware" "linux-volterra" "dtbsync" ; do
+for i in "archinstall-aarch64" "archinstoo-git" "linux-x13s" "volterra-firmware" "linux-volterra" "dtbsync" ; do
 	status=13
 	git submodule update --init $i
 	cd $i
