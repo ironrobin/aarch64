@@ -19,6 +19,9 @@ sudo -u builduser gpg --recv-keys 38DBBDC86092693E
 # for archinstall 
 sudo -u builduser gpg --recv-keys D4B58E897A929F2E
 
+# for mkinitcpio-archiso
+sudo -u builduser gpg --recv-keys 6B5387E670A955AD
+
 passwd -d builduser
 printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers
 
